@@ -22,7 +22,7 @@ from skimage.filters import difference_of_gaussians, window
 from scipy.ndimage import gaussian_filter
 from matplotlib_scalebar.scalebar import ScaleBar
 from matplotlib_scalebar.scalebar import SI_LENGTH_RECIPROCAL
-
+from matplotlib.colors import LogNorm
 
 images = ['50nM 1000rpm_01 (1).tif', 'star03.tif']
 fig = plt.figure(figsize=(12, 5))
@@ -84,9 +84,12 @@ for i in range(2):
     # ax3.plot(x, y, 'o', markeredgecolor='r', markerfacecolor='none', markersize=10)
 
 
-    wimage = image * window('hann', image.shape)
+    wimage = image * window('hann', image.shape) # Window is a 2d gussian shape so that the FFT will apply for mostly the center of the image
     im_f_mag = fftshift(np.abs(fftn(wimage)))
-    ax4.imshow(im_f_mag, cmap='magma', aspect="auto")
+
+    # im_f_mag[709-2:709+2, 1024-2:1024+2] = 0 # Removing the DC becaus it is so high that it make everything look too dark
+    ax4.imshow(im_f_mag, norm=LogNorm(), cmap='magma', aspect="auto")
+    ft_scalebar = ScaleBar( 0.000527616141, 'nm')
     # ax4.set_title('fft')
     ax4.add_artist(ft_scalebar)
     ax4.set_axis_off()
